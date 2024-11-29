@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+
 @RestController
 @RequestMapping("api/product/")
 public class ProductController {
@@ -21,14 +23,21 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<Object> getProductList()
     {
-        return ResponseEntity.ok(productService.getAllProduct());
+        return ResponseEntity.ok(ProductResponse.builder().data(productService.getProductAll()).status(HttpStatus.OK.name()).message("Data Fetched!").build());
+
     }
 
 
     @GetMapping("{id}")
     public ResponseEntity<Object> getProductById(@PathVariable("id") int id, @RequestParam(value = "name",required = false) String name)
     {
-        return ResponseEntity.ok(ProductResponse.builder().data(productService.getAllProduct(id, name)).status(HttpStatus.OK.name()).message("Data Fetched!").build());
+        return ResponseEntity.ok(ProductResponse.builder().data(productService.getProductByIdAndName(id, name)).status(HttpStatus.OK.name()).message("Data Fetched!").build());
+    }
+
+    @GetMapping("{name}")
+    public ResponseEntity<Object> getProductByName(@PathVariable("name") String name)
+    {
+        return ResponseEntity.ok(ProductResponse.builder().data(productService.getProductByName(name)).status(HttpStatus.OK.name()).message("Data Fetched!").build());
     }
 
     @Operation(summary = "Update product details product by Id!" ,

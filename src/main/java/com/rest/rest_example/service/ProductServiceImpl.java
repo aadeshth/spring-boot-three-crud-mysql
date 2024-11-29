@@ -21,23 +21,19 @@ public class ProductServiceImpl implements ProductService {
         this.productRepository = productRepository;
     }
 
-    //   static {
-//       PRODUCT_DTOS.add(ProductDto.builder().id(1).name("Mouse").price(500).build());
-//       PRODUCT_DTOS.add(ProductDto.builder().id(2).name("Pen").price(100).build());
-//       PRODUCT_DTOS.add(ProductDto.builder().id(3).name("Mouse").price(1100).build());
-//    }
     @Override
-    public List<ProductDto> getAllProduct(){
-        return PRODUCT_DTOS;
+    public List<ProductDto> getProductAll(){
+        return getProductDtos(productRepository.findAll());
     }
     @Override
-    public ProductDto getAllProduct(int id, String name) {
+    public ProductDto getProductByIdAndName(int id, String name) {
+
         if (name == null) {
-            Optional<ProductDto> productOptional = PRODUCT_DTOS.stream().filter(productDto -> productDto.getId() == id).findFirst();
+            Optional<ProductDto> productOptional = getProductAll().stream().filter(productDto -> productDto.getId() == id).findFirst();
             if (productOptional.isPresent())
                 return productOptional.get();
         } else {
-            Optional<ProductDto> productOptional = PRODUCT_DTOS.stream().filter(productDto -> productDto.getId() == id && productDto.getName().equals(name)).findFirst();
+            Optional<ProductDto> productOptional = getProductAll().stream().filter(productDto -> productDto.getId() == id && productDto.getName().equals(name)).findFirst();
             if (productOptional.isPresent())
                 return productOptional.get();
         }
@@ -60,5 +56,17 @@ public class ProductServiceImpl implements ProductService {
         } else
             throw new ProductNotFoundException("Record Not Found!");
          return productDto;
+    }
+
+    @Override
+    public List<ProductDto> getProductByName(String name) {
+       return getProductDtos(productRepository.findByName(name));
+    }
+
+    private List<ProductDto> getProductDtos(List<Product> products) {
+        List<ProductDto> productDtos = new ArrayList<>();
+        for (Product p : products)
+            productDtos.add(Conversion.productToProductDto(p));
+        return productDtos;
     }
 }
